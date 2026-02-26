@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { dashboardApi } from '../services/api';
 import TeacherFilter from '../components/TeacherFilter';
+import PeriodFilter from '../components/PeriodFilter';
 import SummaryCards from '../components/SummaryCards';
 import WeeklyTrendsChart from '../components/WeeklyTrendsChart';
 import ActivityTypeChart from '../components/ActivityTypeChart';
@@ -9,6 +10,10 @@ import SubjectChart from '../components/SubjectChart';
 
 function Dashboard() {
   const [selectedTeacher, setSelectedTeacher] = useState('');
+  const [selectedPeriod, setSelectedPeriod] = useState('all');
+  const [selectedWeek, setSelectedWeek] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
   const [summary, setSummary] = useState(null);
   const [weeklyTrends, setWeeklyTrends] = useState([]);
   const [gradeBreakdown, setGradeBreakdown] = useState([]);
@@ -23,12 +28,18 @@ function Dashboard() {
       
       try {
         const teacherId = selectedTeacher || null;
+        const period = selectedPeriod === 'all' ? null : selectedPeriod;
+        let periodValue = null;
+        
+        if (selectedPeriod === 'weekly') periodValue = selectedWeek;
+        else if (selectedPeriod === 'monthly') periodValue = selectedMonth;
+        else if (selectedPeriod === 'yearly') periodValue = selectedYear;
         
         const [summaryRes, trendsRes, gradeRes, subjectRes] = await Promise.all([
-          dashboardApi.getSummary(teacherId),
-          dashboardApi.getWeeklyTrends(teacherId),
-          dashboardApi.getGradeBreakdown(teacherId),
-          dashboardApi.getSubjectBreakdown(teacherId)
+          dashboardApi.getSummary(teacherId, period, periodValue),
+          dashboardApi.getWeeklyTrends(teacherId, period, periodValue),
+          dashboardApi.getGradeBreakdown(teacherId, period, periodValue),
+          dashboardApi.getSubjectBreakdown(teacherId, period, periodValue)
         ]);
         
         setSummary(summaryRes.data);
@@ -44,7 +55,7 @@ function Dashboard() {
     };
 
     fetchData();
-  }, [selectedTeacher]);
+  }, [selectedTeacher, selectedPeriod, selectedWeek, selectedMonth, selectedYear]);
 
   if (loading) {
     return (
@@ -67,6 +78,17 @@ function Dashboard() {
       <TeacherFilter 
         selectedTeacher={selectedTeacher} 
         onTeacherChange={setSelectedTeacher} 
+      />
+      
+      <PeriodFilter 
+        selectedPeriod={selectedPeriod}
+        onPeriodChange={setSelectedPeriod}
+        selectedWeek={selectedWeek}
+        onWeekChange={setSelectedWeek}
+        selectedMonth={selectedMonth}
+        onMonthChange={setSelectedMonth}
+        selectedYear={selectedYear}
+        onYearChange={setSelectedYear}
       />
       
       <SummaryCards summary={summary} />

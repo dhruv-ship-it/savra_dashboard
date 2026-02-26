@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { teacherApi } from '../services/api';
+import { teacherApi, dashboardApi } from '../services/api';
+import PeriodFilter from '../components/PeriodFilter';
 import SummaryCards from '../components/SummaryCards';
+import WeeklyTrendsChart from '../components/WeeklyTrendsChart';
 import ActivityTypeChart from '../components/ActivityTypeChart';
 import GradeChart from '../components/GradeChart';
 import SubjectChart from '../components/SubjectChart';
@@ -9,6 +11,11 @@ import SubjectChart from '../components/SubjectChart';
 function TeacherDetail() {
   const { id } = useParams();
   const [teacher, setTeacher] = useState(null);
+  const [weeklyTrends, setWeeklyTrends] = useState([]);
+  const [selectedPeriod, setSelectedPeriod] = useState('all');
+  const [selectedWeek, setSelectedWeek] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -18,8 +25,20 @@ function TeacherDetail() {
       setError(null);
       
       try {
-        const response = await teacherApi.getTeacherById(id);
-        setTeacher(response.data);
+        const period = selectedPeriod === 'all' ? null : selectedPeriod;
+        let periodValue = null;
+        
+        if (selectedPeriod === 'weekly') periodValue = selectedWeek;
+        else if (selectedPeriod === 'monthly') periodValue = selectedMonth;
+        else if (selectedPeriod === 'yearly') periodValue = selectedYear;
+        
+        const [teacherResponse, trendsResponse] = await Promise.all([
+          teacherApi.getTeacherById(id),
+          dashboardApi.getWeeklyTrends(id, period, periodValue)
+        ]);
+        
+        setTeacher(teacherResponse.data);
+        setWeeklyTrends(trendsResponse.data);
       } catch (err) {
         if (err.response?.status === 404) {
           setError('Teacher not found');
@@ -33,7 +52,7 @@ function TeacherDetail() {
     };
 
     fetchTeacher();
-  }, [id]);
+  }, [id, selectedPeriod, selectedWeek, selectedMonth, selectedYear]);
 
   if (loading) {
     return (
@@ -64,9 +83,24 @@ function TeacherDetail() {
       <h1>{teacher.name}</h1>
       <p className="teacher-id">ID: {teacher.id}</p>
       
+      <PeriodFilter 
+        selectedPeriod={selectedPeriod}
+        onPeriodChange={setSelectedPeriod}
+        selectedWeek={selectedWeek}
+        onWeekChange={setSelectedWeek}
+        selectedMonth={selectedMonth}
+        onMonthChange={setSelectedMonth}
+        selectedYear={selectedYear}
+        onYearChange={setSelectedYear}
+      />
+      
       <SummaryCards summary={teacher.summary} />
       
       <div className="charts-grid">
+        <div className="chart-wrapper large">
+          <WeeklyTrendsChart data={weeklyTrends} />
+        </div>
+        
         <div className="chart-wrapper">
           <ActivityTypeChart summary={teacher.summary} />
         </div>

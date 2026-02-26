@@ -10,10 +10,10 @@ const api = axios.create({
 });
 
 export const dashboardApi = {
-  getSummary: (teacherId) => api.get('/dashboard/summary', { params: { teacherId } }),
-  getWeeklyTrends: (teacherId) => api.get('/dashboard/weekly-trends', { params: { teacherId } }),
-  getGradeBreakdown: (teacherId) => api.get('/dashboard/grade-breakdown', { params: { teacherId } }),
-  getSubjectBreakdown: (teacherId) => api.get('/dashboard/subject-breakdown', { params: { teacherId } })
+  getSummary: (teacherId, period, periodValue) => api.get('/dashboard/summary', { params: { teacherId, period, periodValue } }),
+  getWeeklyTrends: (teacherId, period, periodValue) => api.get('/dashboard/weekly-trends', { params: { teacherId, period, periodValue } }),
+  getGradeBreakdown: (teacherId, period, periodValue) => api.get('/dashboard/grade-breakdown', { params: { teacherId, period, periodValue } }),
+  getSubjectBreakdown: (teacherId, period, periodValue) => api.get('/dashboard/subject-breakdown', { params: { teacherId, period, periodValue } })
 };
 
 export const teacherApi = {

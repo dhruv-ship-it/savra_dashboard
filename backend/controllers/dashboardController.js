@@ -3,8 +3,8 @@ const dashboardService = require('../services/dashboardService');
 const dashboardController = {
   async getSummary(req, res) {
     try {
-      const { teacherId } = req.query;
-      const summary = await dashboardService.getSummary(teacherId);
+      const { teacherId, period, periodValue } = req.query;
+      const summary = await dashboardService.getSummary(teacherId, period, periodValue);
       res.json(summary);
     } catch (error) {
       console.error('Error getting summary:', error);
@@ -14,8 +14,8 @@ const dashboardController = {
 
   async getWeeklyTrends(req, res) {
     try {
-      const { teacherId } = req.query;
-      const trends = await dashboardService.getWeeklyTrends(teacherId);
+      const { teacherId, period, periodValue } = req.query;
+      const trends = await dashboardService.getWeeklyTrends(teacherId, period, periodValue);
       res.json(trends);
     } catch (error) {
       console.error('Error getting weekly trends:', error);
@@ -25,8 +25,8 @@ const dashboardController = {
 
   async getGradeBreakdown(req, res) {
     try {
-      const { teacherId } = req.query;
-      const breakdown = await dashboardService.getGradeBreakdown(teacherId);
+      const { teacherId, period, periodValue } = req.query;
+      const breakdown = await dashboardService.getGradeBreakdown(teacherId, period, periodValue);
       res.json(breakdown);
     } catch (error) {
       console.error('Error getting grade breakdown:', error);
@@ -36,8 +36,8 @@ const dashboardController = {
 
   async getSubjectBreakdown(req, res) {
     try {
-      const { teacherId } = req.query;
-      const breakdown = await dashboardService.getSubjectBreakdown(teacherId);
+      const { teacherId, period, periodValue } = req.query;
+      const breakdown = await dashboardService.getSubjectBreakdown(teacherId, period, periodValue);
       res.json(breakdown);
     } catch (error) {
       console.error('Error getting subject breakdown:', error);

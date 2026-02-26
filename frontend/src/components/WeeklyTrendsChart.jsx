@@ -20,30 +20,30 @@ function WeeklyTrendsChart({ data }) {
     const questionPapers = data.map(item => item['Question Paper']);
 
     chartRef.current = new Chart(ctx, {
-      type: 'line',
+      type: 'bar',
       data: {
         labels,
         datasets: [
           {
             label: 'Lesson Plans',
             data: lessonPlans,
+            backgroundColor: 'rgba(59, 130, 246, 0.8)',
             borderColor: 'rgb(59, 130, 246)',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            tension: 0.3
+            borderWidth: 1
           },
           {
             label: 'Quizzes',
             data: quizzes,
+            backgroundColor: 'rgba(16, 185, 129, 0.8)',
             borderColor: 'rgb(16, 185, 129)',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-            tension: 0.3
+            borderWidth: 1
           },
           {
             label: 'Question Papers',
             data: questionPapers,
+            backgroundColor: 'rgba(245, 158, 11, 0.8)',
             borderColor: 'rgb(245, 158, 11)',
-            backgroundColor: 'rgba(245, 158, 11, 0.1)',
-            tension: 0.3
+            borderWidth: 1
           }
         ]
       },
@@ -53,16 +53,52 @@ function WeeklyTrendsChart({ data }) {
         plugins: {
           title: {
             display: true,
-            text: 'Weekly Activity Trends'
+            text: 'Weekly Activity Trends',
+            font: {
+              size: 16,
+              weight: 'bold'
+            }
+          },
+          legend: {
+            position: 'top',
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ': ' + context.parsed.y + ' activities';
+              }
+            }
           }
         },
         scales: {
+          x: {
+            stacked: false,
+            grid: {
+              display: false
+            }
+          },
           y: {
             beginAtZero: true,
+            stacked: false,
             ticks: {
-              stepSize: 1
+              stepSize: 1,
+              callback: function(value) {
+                if (Number.isInteger(value)) {
+                  return value;
+                }
+              }
+            },
+            title: {
+              display: true,
+              text: 'Number of Activities'
             }
           }
+        },
+        interaction: {
+          mode: 'index',
+          intersect: false
         }
       }
     });
