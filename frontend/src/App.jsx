@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import TeacherDetail from './pages/TeacherDetail';
+import RecentActivities from './pages/RecentActivities';
 import './App.css';
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
           <Link to="/" className="nav-brand">Principal Dashboard</Link>
           <div className="nav-links">
             <Link to="/">Dashboard</Link>
+            <Link to="/activities">Recent Activities</Link>
           </div>
         </nav>
         
@@ -18,6 +20,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/teachers/:id" element={<TeacherDetail />} />
+            <Route path="/activities" element={<RecentActivities />} />
           </Routes>
         </main>
       </div>

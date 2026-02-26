@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const teacherRoutes = require('./routes/teacherRoutes');
+const activityRoutes = require('./routes/activityRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -12,6 +13,7 @@ app.use(express.json());
 
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/teachers', teacherRoutes);
+app.use('/api/activities', activityRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });

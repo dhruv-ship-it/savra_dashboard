@@ -64,8 +64,6 @@ function Dashboard() {
 
   return (
     <div className="dashboard">
-      <h1>Principal Dashboard</h1>
-      
       <TeacherFilter 
         selectedTeacher={selectedTeacher} 
         onTeacherChange={setSelectedTeacher} 

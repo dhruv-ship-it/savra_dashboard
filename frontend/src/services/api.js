@@ -21,4 +21,8 @@ export const teacherApi = {
   getTeacherById: (id) => api.get(`/teachers/${id}`)
 };
 
+export const activityApi = {
+  getActivities: (page = 1, limit = 10) => api.get('/activities/recent', { params: { page, limit } })
+};
+
 export default api;
