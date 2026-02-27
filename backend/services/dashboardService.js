@@ -56,12 +56,10 @@ class DashboardService {
     
     query += `
       GROUP BY 
-        YEAR(created_at),
-        WEEK(created_at, 1),
+        CONCAT(YEAR(created_at), '-W', LPAD(WEEK(created_at, 1), 2, '0')),
         activity_type
       ORDER BY 
-        YEAR(created_at),
-        WEEK(created_at, 1)
+        MIN(created_at)
     `;
     
     const [rows] = await pool.query(query, params);
