@@ -132,50 +132,69 @@ class DashboardService {
   }
 
   getDateRange(period, periodValue) {
-    if (!period || !periodValue) {
+    try {
+      if (!period || !periodValue) {
+        return { start: null, end: null };
+      }
+
+      let start, end;
+      
+      switch (period) {
+        case 'weekly': {
+          // periodValue format: YYYY-WXX
+          const [year, weekStr] = periodValue.split('-W');
+          const week = parseInt(weekStr);
+          
+          if (!year || !week || week < 1 || week > 53) {
+            return { start: null, end: null };
+          }
+          
+          start = this.getDateOfWeek(parseInt(year), week, 1); // Monday
+          end = this.getDateOfWeek(parseInt(year), week, 7); // Sunday
+          end.setHours(23, 59, 59, 999);
+          break;
+        }
+        
+        case 'monthly': {
+          // periodValue format: YYYY-MM
+          const [year, month] = periodValue.split('-');
+          
+          if (!year || !month || month < 1 || month > 12) {
+            return { start: null, end: null };
+          }
+          
+          start = new Date(parseInt(year), parseInt(month) - 1, 1);
+          end = new Date(parseInt(year), parseInt(month), 0); // Last day of month
+          end.setHours(23, 59, 59, 999);
+          break;
+        }
+        
+        case 'yearly': {
+          // periodValue format: YYYY
+          const year = parseInt(periodValue);
+          
+          if (!year || year < 2020 || year > 2030) {
+            return { start: null, end: null };
+          }
+          
+          start = new Date(year, 0, 1);
+          end = new Date(year, 11, 31);
+          end.setHours(23, 59, 59, 999);
+          break;
+        }
+        
+        default:
+          return { start: null, end: null };
+      }
+      
+      return {
+        start: start.toISOString().slice(0, 19).replace('T', ' '),
+        end: end.toISOString().slice(0, 19).replace('T', ' ')
+      };
+    } catch (error) {
+      console.error('Error in getDateRange:', error);
       return { start: null, end: null };
     }
-
-    let start, end;
-    
-    switch (period) {
-      case 'weekly': {
-        // periodValue format: YYYY-WXX
-        const [year, weekStr] = periodValue.split('-W');
-        const week = parseInt(weekStr);
-        
-        start = this.getDateOfWeek(parseInt(year), week, 1); // Monday
-        end = this.getDateOfWeek(parseInt(year), week, 7); // Sunday
-        end.setHours(23, 59, 59, 999);
-        break;
-      }
-      
-      case 'monthly': {
-        // periodValue format: YYYY-MM
-        const [year, month] = periodValue.split('-');
-        start = new Date(parseInt(year), parseInt(month) - 1, 1);
-        end = new Date(parseInt(year), parseInt(month), 0); // Last day of month
-        end.setHours(23, 59, 59, 999);
-        break;
-      }
-      
-      case 'yearly': {
-        // periodValue format: YYYY
-        const year = parseInt(periodValue);
-        start = new Date(year, 0, 1);
-        end = new Date(year, 11, 31);
-        end.setHours(23, 59, 59, 999);
-        break;
-      }
-      
-      default:
-        return { start: null, end: null };
-    }
-    
-    return {
-      start: start.toISOString().slice(0, 19).replace('T', ' '),
-      end: end.toISOString().slice(0, 19).replace('T', ' ')
-    };
   }
 
   getDateOfWeek(year, week, dayOfWeek) {
