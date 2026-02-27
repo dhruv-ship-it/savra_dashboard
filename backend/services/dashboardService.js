@@ -55,8 +55,13 @@ class DashboardService {
     }
     
     query += `
-      GROUP BY YEARWEEK(created_at, 1), activity_type
-      ORDER BY YEARWEEK(created_at, 1)
+      GROUP BY 
+        YEAR(created_at),
+        WEEK(created_at, 1),
+        activity_type
+      ORDER BY 
+        YEAR(created_at),
+        WEEK(created_at, 1)
     `;
     
     const [rows] = await pool.query(query, params);
